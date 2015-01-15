@@ -19,11 +19,11 @@ JOB_MAX_COUNT = 10000
 STORE_KEY = 'hubot_schedule'
 
 module.exports = (robot) ->
-  if !robot.brain.get(STORE_KEY)
-    robot.brain.set STORE_KEY, {}
-
   robot.brain.on 'loaded', =>
     syncSchedules robot
+
+  if !robot.brain.get(STORE_KEY)
+    robot.brain.set(STORE_KEY, {})
 
   robot.respond /schedule (?:new|add) "(.*?)" (.*)$/i, (msg) ->
     schedule robot, msg, msg.match[1], msg.match[2]
@@ -112,13 +112,16 @@ cancelSchedule = (robot, msg, id) ->
 
 
 syncSchedules = (robot) ->
+  if !robot.brain.get(STORE_KEY)
+    robot.brain.set(STORE_KEY, {})
+
   nonCachedSchedules = difference(robot.brain.get(STORE_KEY), JOBS)
   for own id, job of nonCachedSchedules
     scheduleFromBrain robot, id, job...
 
   nonStoredSchedules = difference(JOBS, robot.brain.get(STORE_KEY))
   for own id, job of nonStoredSchedules
-    storeScheduleToBrain robot, id, job
+    storeScheduleInBrain robot, id, job
 
 
 scheduleFromBrain = (robot, id, pattern, user, message) ->
@@ -139,7 +142,7 @@ storeScheduleInBrain = (robot, id, job) ->
   robot.send envelope, "#{id}: Schedule stored in brain asynchronously"
 
 
-difference = (obj1, obj2) ->
+difference = (obj1 = {}, obj2 = {}) ->
   diff = {}
   for id, job of obj1
     diff[id] = job if id !of obj2
