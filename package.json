@@ -1,0 +1,29 @@
+{
+  "name": "hubot-schedule",
+  "description": "Message scheduler for hubot",
+  "version": "0.1.0",
+  "author": "matsukaz <matsukaz@gmail.com> (http://matsukaz.hatenablog.com)",
+  "homepage": "https://github.com/matsukaz/hubot-schedule",
+  "main": "./src/index.coffee",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/matsukaz/hubot-schedule.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hubot",
+    "schedule",
+    "cron"
+  ],
+  "dependencies": {
+    "node-schedule": "~0.1.15",
+    "cron-parser": "~0.5.1"
+  },
+  "bugs": {
+    "url": "https://github.com/matsukaz/hubot-schedule/issues"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
