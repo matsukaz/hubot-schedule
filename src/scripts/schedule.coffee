@@ -4,7 +4,7 @@
 # Commands:
 #   hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
 #   hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
-#   hubot schedule [del|delete|remove|cancel] <id> - Cancel the schedule
+#   hubot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 #   hubot schedule [upd|update] <id> <message> - Update scheduled message
 #   hubot schedule list - List all scheduled messages
 #
@@ -108,7 +108,7 @@ cancelSchedule = (robot, msg, id) ->
 
   job.cancel()
   delete robot.brain.get(STORE_KEY)[id]
-  msg.send "#{id}: Schedule deleted"
+  msg.send "#{id}: Schedule canceled"
 
 
 syncSchedules = (robot) ->
