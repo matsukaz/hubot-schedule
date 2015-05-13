@@ -81,3 +81,4 @@ Message is not scheduled
 
 スケジュール登録したメッセージを永続化したい場合は、[hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain)のようなhubot-brainの永続化モジュールを利用してください。
 
+環境変数に`HUBOT_SCHEDULE_DEBUG=1`を設定することで、デバッグメッセージなどを表示することができます。

@@ -129,17 +129,17 @@ scheduleFromBrain = (robot, id, pattern, user, message) ->
   try
     createSchedule robot, id, pattern, user, message
   catch error
-    robot.send envelope, "#{id}: Failed to schedule from brain. [${error.message}]"
+    robot.send envelope, "#{id}: Failed to schedule from brain. [${error.message}]" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
     return delete robot.brain.get(STORE_KEY)[id]
 
-  robot.send envelope, "#{id} scheduled from brain"
+  robot.send envelope, "#{id} scheduled from brain" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
 
 
 storeScheduleInBrain = (robot, id, job) ->
   robot.brain.get(STORE_KEY)[id] = job.serialize()
 
   envelope = user: job.user, room: job.user.room
-  robot.send envelope, "#{id}: Schedule stored in brain asynchronously"
+  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
 
 
 difference = (obj1 = {}, obj2 = {}) ->

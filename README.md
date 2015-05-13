@@ -77,4 +77,6 @@ Hubot> hubot schedule list
 Message is not scheduled
 ```
 
-If you are required to persist scheduled messages, use hubot-brain persistent module like [hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain).
+If you need to persist scheduled messages, use hubot-brain persistent module like [hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain).
+
+Setting environment variable `HUBOT_SCHEDULE_DEBUG=1` will show some debug messages.
