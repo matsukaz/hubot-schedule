@@ -66,8 +66,8 @@ Hubot> hubot schedule list
 6738: [ Fri Jan 16 2015 10:00:00 GMT+0900 (JST) ] #Shell スクリプトをリリースしてみんなにシェアしよう！
 9735: [ 0 10 * * 1-5 ] #Shell 朝のコーヒー淹れ忘れないでね :)
 
-(2015-01-16 10:00:00になると以下が投稿され、スケジュールから削除される)
 スクリプトをリリースしてみんなにシェアしよう！
+(2015-01-16 10:00:00になると投稿され、スケジュールから削除される)
 
 Hubot> hubot schedule list
 9735: [ 0 10 * * 1-5 ] #Shell 朝のコーヒー淹れ忘れないでね :)
@@ -77,6 +77,11 @@ Hubot> hubot schedule del 6738
 
 Hubot> hubot schedule list
 Message is not scheduled
+
+
+Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
+9735: Schedule created
+(hubotはhubot-scheduleによるメッセージを処理できるため、指定時間になったらコーヒー画像を表示する、といった利用が可能です。メッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。)
 ```
 
 スケジュール登録したメッセージを永続化したい場合は、[hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain)のようなhubot-brainの永続化モジュールを利用してください。

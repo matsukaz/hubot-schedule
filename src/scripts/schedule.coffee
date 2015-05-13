@@ -169,7 +169,7 @@ class Job
     @job = scheduler.scheduleJob(@pattern, =>
       envelope = user: @user, room: @user.room
       robot.send envelope, @message
-      robot.adapter.receive new TextMessage(@user, @message) unless process.env.HUBOT_SCHEDULE_DONT_RECEIVE
+      robot.adapter.receive new TextMessage(@user, @message) unless process.env.HUBOT_SCHEDULE_DONT_RECEIVE is '1'
       @cb?()
     )
 

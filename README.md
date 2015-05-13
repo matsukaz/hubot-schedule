@@ -67,8 +67,8 @@ Hubot> hubot schedule list
 6738: [ Fri Jan 16 2015 10:00:00 GMT+0900 (JST) ] #Shell Let's release this script and share with everyone!
 9735: [ 0 10 * * 1-5 ] #Shell Don't forget to brew coffee :)
 
-(Hubot posts the following message at 2015-01-16 10:00:00 and schedule will be removed automatically)
 Let's release this script and share with everyone!
+(Hubot posts the message at 2015-01-16 10:00:00 and schedule will be removed automatically)
 
 Hubot> hubot schedule del 9735
 9735: Schedule canceled
@@ -77,8 +77,8 @@ Hubot> hubot schedule list
 Message is not scheduled
 
 Hubot> hubot schedule add "0 10 * * 1-5" hubot image me coffee
-9735: Schedule created v
-(hubot can process messages sent by hubot-schedule, so you can ask hubot to do something at the scheduled time, like post an image of coffee. You can disable it by setting `HUBOT_SCHEDULE_DONT_RECEIVE` environment variable to 1)
+9735: Schedule created
+(hubot can process messages sent by hubot-schedule, so you can ask hubot to do something at the scheduled time, like post an image of coffee. You can disable it by setting environment variable `HUBOT_SCHEDULE_DONT_RECEIVE=1`)
 ```
 
 If you need to persist scheduled messages, use hubot-brain persistent module like [hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain).
