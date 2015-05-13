@@ -84,3 +84,12 @@ Hubot> hubot schedule add "0 10 * * 1-5" hubot image me coffee
 If you need to persist scheduled messages, use hubot-brain persistent module like [hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain).
 
 Setting environment variable `HUBOT_SCHEDULE_DEBUG=1` will show some debug messages.
+
+
+## Copyright and license
+
+Copyright 2015 Masakazu Matsushita.
+
+Licensed under the **[MIT License] [license]**.
+
+
