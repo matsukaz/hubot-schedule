@@ -13,7 +13,7 @@
 
 scheduler = require('node-schedule')
 cronParser = require('cron-parser')
-
+{TextMessage} = require('hubot')
 JOBS = {}
 JOB_MAX_COUNT = 10000
 STORE_KEY = 'hubot_schedule'
@@ -169,6 +169,7 @@ class Job
     @job = scheduler.scheduleJob(@pattern, =>
       envelope = user: @user, room: @user.room
       robot.send envelope, @message
+      robot.adapter.receive new TextMessage(@user, @message) unless process.env.HUBOT_SCHEDULE_DONT_RECEIVE
       @cb?()
     )
 
