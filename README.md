@@ -22,7 +22,7 @@ Add `hubot-schedule` to your `package.json`.
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.1.2"
+  "hubot-schedule": "~0.2.0"
 }
 ```
 
@@ -90,6 +90,5 @@ Setting environment variable `HUBOT_SCHEDULE_DEBUG=1` will show some debug messa
 
 Copyright 2015 Masakazu Matsushita.
 
-Licensed under the **[MIT License] [license]**.
-
+Licensed under the **[MIT License](LICENSE)**.
 

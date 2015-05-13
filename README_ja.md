@@ -21,7 +21,7 @@ hubot-scheduleはスケジュール管理に`node-schedule`を利用していま
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.1.2"
+  "hubot-schedule": "~0.2.0"
 }
 ```
 
@@ -93,6 +93,5 @@ Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
 
 Copyright 2015 Masakazu Matsushita.
 
-Licensed under the **[MIT License] [license]**.
-
+Licensed under the **[MIT License](LICENSE)**.
 
