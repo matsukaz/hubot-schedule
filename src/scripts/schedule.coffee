@@ -129,7 +129,7 @@ scheduleFromBrain = (robot, id, pattern, user, message) ->
   try
     createSchedule robot, id, pattern, user, message
   catch error
-    robot.send envelope, "#{id}: Failed to schedule from brain. [${error.message}]" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
+    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
     return delete robot.brain.get(STORE_KEY)[id]
 
   robot.send envelope, "#{id} scheduled from brain" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
