@@ -107,6 +107,7 @@ cancelSchedule = (robot, msg, id) ->
   return msg.send "#{id}: Schedule not found" if !job
 
   job.cancel()
+  delete JOBS[id]
   delete robot.brain.get(STORE_KEY)[id]
   msg.send "#{id}: Schedule canceled"
 
