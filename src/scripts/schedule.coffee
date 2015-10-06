@@ -8,6 +8,9 @@
 #   hubot schedule [upd|update] <id> <message> - Update scheduled message
 #   hubot schedule list - List all scheduled messages
 #
+# Configuration:
+#   HUBOT_SCHEDULE_LIST_PREFIX
+#
 # Author:
 #   matsukaz
 
@@ -35,9 +38,9 @@ module.exports = (robot) ->
       if room in [msg.message.user.room, msg.message.user.reply_to]
         text += "#{id}: [ #{job.pattern} ] \##{room} #{job.message} \n"
     if !!text.length
-      msg.send text
+      msg.send "#{process.env.HUBOT_SCHEDULE_LIST_PREFIX || ""}#{text}"
     else
-      msg.send 'Message is not scheduled'
+      msg.send 'No messages have been scheduled'
 
   robot.respond /schedule (?:upd|update) (\d+) (.*)/i, (msg) ->
     updateSchedule robot, msg, msg.match[1], msg.match[2]
