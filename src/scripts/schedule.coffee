@@ -1,6 +1,15 @@
 # Description:
 #   Schedule a message in both cron-style and datetime-based format pattern
 #
+# Dependencies:
+#   "node-schedule" : "~0.1.15"
+#   "cron-parser"   : "~0.5.1"
+#
+# Configuration:
+#   HUBOT_SCHEDULE_DEBUG - set "1" for debug
+#   HUBOT_SCHEDULE_DONT_RECEIVE - set "1" if you don't want hubot to be processed by scheduled message
+#   HUBOT_SCHEDULE_LIST_REPLACE_TEXT - set JSON object like '{"@":"[at]"}' to configure text replacement used when listing scheduled messages
+#
 # Commands:
 #   hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
 #   hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
@@ -9,7 +18,14 @@
 #   hubot schedule list - List all scheduled messages
 #
 # Author:
-#   matsukaz
+#   matsukaz <matsukaz@gmail.com>
+
+# configuration settings
+config =
+  debug: process.env.HUBOT_SCHEDULE_DEBUG
+  dont_receive: process.env.HUBOT_SCHEDULE_DONT_RECEIVE
+  list:
+    replace_text: JSON.parse(process.env.HUBOT_SCHEDULE_LIST_REPLACE_TEXT ? '{}')
 
 scheduler = require('node-schedule')
 cronParser = require('cron-parser')
@@ -35,9 +51,10 @@ module.exports = (robot) ->
       if room in [msg.message.user.room, msg.message.user.reply_to]
         text += "#{id}: [ #{job.pattern} ] \##{room} #{job.message} \n"
     if !!text.length
+      text = text.replace(///#{org_text}///g, replaced_text) for org_text, replaced_text of config.list.replace_text
       msg.send text
     else
-      msg.send 'Message is not scheduled'
+      msg.send 'No messages have been scheduled'
 
   robot.respond /schedule (?:upd|update) (\d+) (.*)/i, (msg) ->
     updateSchedule robot, msg, msg.match[1], msg.match[2]
@@ -130,17 +147,17 @@ scheduleFromBrain = (robot, id, pattern, user, message) ->
   try
     createSchedule robot, id, pattern, user, message
   catch error
-    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
+    robot.send envelope, "#{id}: Failed to schedule from brain. [#{error.message}]" if config.debug is '1'
     return delete robot.brain.get(STORE_KEY)[id]
 
-  robot.send envelope, "#{id} scheduled from brain" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
+  robot.send envelope, "#{id} scheduled from brain" if config.debug is '1'
 
 
 storeScheduleInBrain = (robot, id, job) ->
   robot.brain.get(STORE_KEY)[id] = job.serialize()
 
   envelope = user: job.user, room: job.user.room
-  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" if process.env.HUBOT_SCHEDULE_DEBUG is '1'
+  robot.send envelope, "#{id}: Schedule stored in brain asynchronously" if config.debug is '1'
 
 
 difference = (obj1 = {}, obj2 = {}) ->
@@ -170,7 +187,7 @@ class Job
     @job = scheduler.scheduleJob(@pattern, =>
       envelope = user: @user, room: @user.room
       robot.send envelope, @message
-      robot.adapter.receive new TextMessage(@user, @message) unless process.env.HUBOT_SCHEDULE_DONT_RECEIVE is '1'
+      robot.adapter.receive new TextMessage(@user, @message) unless config.dont_receive is '1'
       @cb?()
     )
 

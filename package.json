@@ -22,7 +22,9 @@
   "bugs": {
     "url": "https://github.com/matsukaz/hubot-schedule/issues"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "hubot": "^2.11.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
