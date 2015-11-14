@@ -25,7 +25,7 @@ hubot-scheduleはスケジュール管理に`node-schedule`を利用していま
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.2.1"
+  "hubot-schedule": "~0.3.0"
 }
 ```
 
