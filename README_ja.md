@@ -85,12 +85,25 @@ Message is not scheduled
 
 Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
 9735: Schedule created
-(hubotはhubot-scheduleによるメッセージを処理できるため、指定時間になったらコーヒー画像を表示する、といった利用が可能です。メッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。)
+(hubotはhubot-scheduleによるメッセージを処理できるため、指定時間になったらコーヒー画像を表示する、といった利用が可能です。)
 ```
 
 スケジュール登録したメッセージを永続化したい場合は、[hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain)のようなhubot-brainの永続化モジュールを利用してください。
 
+## 設定
+
+### HUBOT_SCHEDULE_DONT_RECEIVE
+
+hubotにhubot-scheduleから送られたメッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。
+ 
+### HUBOT_SCHEDULE_DEBUG
+
 環境変数に`HUBOT_SCHEDULE_DEBUG=1`を設定することで、デバッグメッセージなどを表示することができます。
+
+### HUBOT_SCHEDULE_LIST_REPLACE_TEXT
+
+環境変数に`HUBOT_SCHEDULE_LIST_REPLACE_TEXT='<文字列化したJSON>'`を設定することで、スケジュールをリスト表示する際に文字を置換することができます。デフォルトの設定は`'{"@":"[@]"}'`です。
+
 
 
 ## Copyright and license

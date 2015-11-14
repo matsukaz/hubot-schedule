@@ -25,7 +25,7 @@ config =
   debug: process.env.HUBOT_SCHEDULE_DEBUG
   dont_receive: process.env.HUBOT_SCHEDULE_DONT_RECEIVE
   list:
-    replace_text: JSON.parse(process.env.HUBOT_SCHEDULE_LIST_REPLACE_TEXT ? '{}')
+    replace_text: JSON.parse(process.env.HUBOT_SCHEDULE_LIST_REPLACE_TEXT ? '{"@":"[@]"}')
 
 scheduler = require('node-schedule')
 cronParser = require('cron-parser')

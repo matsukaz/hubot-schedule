@@ -82,13 +82,25 @@ Message is not scheduled
 
 Hubot> hubot schedule add "0 10 * * 1-5" hubot image me coffee
 9735: Schedule created
-(hubot can process messages sent by hubot-schedule, so you can ask hubot to do something at the scheduled time, like post an image of coffee. You can disable it by setting environment variable `HUBOT_SCHEDULE_DONT_RECEIVE=1`)
+(hubot can process messages sent by hubot-schedule, so you can ask hubot to do something at the scheduled time, like post an image of coffee.)
 ```
 
 If you need to persist scheduled messages, use hubot-brain persistent module like [hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain).
 
+## Configuration
+
+### HUBOT_SCHEDULE_DONT_RECEIVE
+
+Setting environment variable `HUBOT_SCHEDULE_DONT_RECEIVE=1` will disable hubot not to process messages sent by hubot-schedule.
+ 
+### HUBOT_SCHEDULE_DEBUG
+
 Setting environment variable `HUBOT_SCHEDULE_DEBUG=1` will show some debug messages.
 
+### HUBOT_SCHEDULE_LIST_REPLACE_TEXT
+
+Setting environment variable `HUBOT_SCHEDULE_LIST_REPLACE_TEXT='<stringified json>'` will configure the text replacement used when listing scheduled messages.
+Default configuration is `'{"@":"[@]"}'`.
 
 ## Copyright and license
 
