@@ -1,3 +1,15 @@
+v0.4.0
+======
+
+* Add default value for HUBOT_SCHEDULE_LIST_REPLACE_TEXT
+
+
+v0.3.0
+======
+
+* Add HUBOT_SCHEDULE_LIST_REPLACE_TEXT configuration support
+
+
 v0.2.1
 ======
 
