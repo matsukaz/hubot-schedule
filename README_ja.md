@@ -1,6 +1,10 @@
 # hubot-schedule
 
-\[English: [README.md](README.md)\]
+[README.md](README.md)
+
+[![NPM version](https://badge.fury.io/js/hubot-schedule.png)](http://badge.fury.io/js/hubot-schedule)
+
+[![NPM](https://nodei.co/npm/hubot-schedule.png?downloads=true)](https://nodei.co/npm/hubot-schedule/)
 
 hubot-scheduleはHubotで動作するメッセージスケジューラです。
 

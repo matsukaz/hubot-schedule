@@ -1,6 +1,10 @@
 # hubot-schedule
 
-\[Japanese: [README_ja.md](README_ja.md)\]
+[README_ja.md](README_ja.md)
+
+[![NPM version](https://badge.fury.io/js/hubot-schedule.png)](http://badge.fury.io/js/hubot-schedule)
+
+[![NPM](https://nodei.co/npm/hubot-schedule.png?downloads=true)](https://nodei.co/npm/hubot-schedule/)
 
 hubot-schedule is a message scheduler runs on hubot.
 

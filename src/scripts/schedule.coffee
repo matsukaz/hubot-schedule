@@ -2,8 +2,8 @@
 #   Schedule a message in both cron-style and datetime-based format pattern
 #
 # Dependencies:
-#   "node-schedule" : "~0.1.15"
-#   "cron-parser"   : "~0.5.1"
+#   "node-schedule" : "~0.5.1",
+#   "cron-parser"   : "~1.0.1"
 #
 # Configuration:
 #   HUBOT_SCHEDULE_DEBUG - set "1" for debug
