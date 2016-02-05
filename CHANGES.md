@@ -1,3 +1,8 @@
+v0.4.1
+======
+
+* Fix scheduled job not working on leap year
+
 v0.4.0
 ======
 
