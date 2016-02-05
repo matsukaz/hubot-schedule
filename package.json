@@ -16,7 +16,7 @@
     "cron"
   ],
   "dependencies": {
-    "node-schedule": "~0.5.1",
+    "node-schedule": "~1.0.0",
     "cron-parser": "~1.0.1"
   },
   "bugs": {
