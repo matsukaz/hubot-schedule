@@ -50,9 +50,13 @@ Add `hubot-schedule` to `external-scripts.json`.
 Hubot> hubot help schedule
 Hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
 Hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
+Hubot schedule [add|new] #<room> "<datetime pattern>" <message> - Schedule a message to a specific room that runs on a specific date and time
+Hubot schedule [add|new] #<room> "<cron pattern>" <message> - Schedule a message to a specific room that runs recurrently
 Hubot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 Hubot schedule [upd|update] <id> <message> - Update scheduled message
-Hubot schedule list - List all scheduled messages
+Hubot schedule list - List all scheduled messages for current room
+Hubot schedule list #<room> - List all scheduled messages for specified room
+Hubot schedule list all - List all scheduled messages for any rooms
 
 Hubot> hubot schedule add "2015-01-16 10:00" Let's release this script!
 6738: Schedule created
@@ -92,7 +96,11 @@ If you need to persist scheduled messages, use hubot-brain persistent module lik
 ### HUBOT_SCHEDULE_DONT_RECEIVE
 
 Setting environment variable `HUBOT_SCHEDULE_DONT_RECEIVE=1` will disable hubot not to process messages sent by hubot-schedule.
- 
+
+### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
+
+Setting environment variable `HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1` will disable to control schedule from other rooms.
+
 ### HUBOT_SCHEDULE_DEBUG
 
 Setting environment variable `HUBOT_SCHEDULE_DEBUG=1` will show some debug messages.
@@ -107,4 +115,3 @@ Default configuration is `'{"@":"[@]"}'`.
 Copyright 2015 Masakazu Matsushita.
 
 Licensed under the **[MIT License](LICENSE)**.
-

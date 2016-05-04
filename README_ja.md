@@ -49,9 +49,13 @@ $ npm install
 Hubot> hubot help schedule
 Hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
 Hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
+Hubot schedule [add|new] #<room> "<datetime pattern>" <message> - Schedule a message to a specific room that runs on a specific date and time
+Hubot schedule [add|new] #<room> "<cron pattern>" <message> - Schedule a message to a specific room that runs recurrently
 Hubot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 Hubot schedule [upd|update] <id> <message> - Update scheduled message
-Hubot schedule list - List all scheduled messages
+Hubot schedule list - List all scheduled messages for current room
+Hubot schedule list #<room> - List all scheduled messages for specified room
+Hubot schedule list all - List all scheduled messages for any rooms
 
 Hubot> hubot schedule add "2015-01-16 10:00" スクリプトをリリースするよ！
 6738: Schedule created
@@ -95,7 +99,11 @@ Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
 ### HUBOT_SCHEDULE_DONT_RECEIVE
 
 hubotにhubot-scheduleから送られたメッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。
- 
+
+### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
+
+他のroomからスケジュールを操作したくない場合には、環境変数に`HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1`を設定します。
+
 ### HUBOT_SCHEDULE_DEBUG
 
 環境変数に`HUBOT_SCHEDULE_DEBUG=1`を設定することで、デバッグメッセージなどを表示することができます。
@@ -111,4 +119,3 @@ hubotにhubot-scheduleから送られたメッセージを処理させたくな�
 Copyright 2015 Masakazu Matsushita.
 
 Licensed under the **[MIT License](LICENSE)**.
-
