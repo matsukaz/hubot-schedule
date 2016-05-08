@@ -49,7 +49,7 @@ module.exports = (robot) ->
   if !robot.brain.get(STORE_KEY)
     robot.brain.set(STORE_KEY, {})
 
-  robot.respond /schedule (?:new|add)(?: #(.*))? "(.*?)" (.*)$/i, (msg) ->
+  robot.respond /schedule (?:new|add)(?: #(.*))? "(.*?)" ((?:.|\s)*)$/i, (msg) ->
     target_room = msg.match[1]
     if config.deny_external_control is '1' and not is_blank(target_room)
       if target_room not in [msg.message.user.room, msg.message.user.reply_to]
@@ -77,7 +77,7 @@ module.exports = (robot) ->
     else
       msg.send 'No messages have been scheduled'
 
-  robot.respond /schedule (?:upd|update) (\d+) (.*)/i, (msg) ->
+  robot.respond /schedule (?:upd|update) (\d+) ((?:.|\s)*)/i, (msg) ->
     updateSchedule robot, msg, msg.match[1], msg.match[2]
 
   robot.respond /schedule (?:del|delete|remove|cancel) (\d+)/i, (msg) ->
