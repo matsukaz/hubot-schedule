@@ -8,7 +8,7 @@
 # Configuration:
 #   HUBOT_SCHEDULE_DEBUG - set "1" for debug
 #   HUBOT_SCHEDULE_DONT_RECEIVE - set "1" if you don't want hubot to be processed by scheduled message
-#   HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL - set "1" if you don't want to allow anyone to control schedule for other rooms
+#   HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL - set "1" if you want to deny scheduling from other rooms
 #   HUBOT_SCHEDULE_LIST_REPLACE_TEXT - set JSON object like '{"@":"[at]"}' to configure text replacement used when listing scheduled messages
 #
 # Commands:
@@ -40,8 +40,6 @@ JOBS = {}
 JOB_MAX_COUNT = 10000
 STORE_KEY = 'hubot_schedule'
 
-is_blank = (s) -> !s?.trim()
-
 module.exports = (robot) ->
   robot.brain.on 'loaded', =>
     syncSchedules robot
@@ -51,9 +49,9 @@ module.exports = (robot) ->
 
   robot.respond /schedule (?:new|add)(?: #(.*))? "(.*?)" ((?:.|\s)*)$/i, (msg) ->
     target_room = msg.match[1]
-    if config.deny_external_control is '1' and not is_blank(target_room)
-      if target_room not in [msg.message.user.room, msg.message.user.reply_to]
-        return msg.send "Creating schedule for other room is not allowed"
+
+    if not is_blank(target_room) and isRestrictedRoom(target_room, msg)
+      return msg.send "Creating schedule for the other room is restricted"
     schedule robot, msg, target_room, msg.match[2], msg.match[3]
 
   robot.respond /schedule list(?: (all|#.*))?/i, (msg) ->
@@ -135,9 +133,8 @@ updateSchedule = (robot, msg, id, message) ->
   job = JOBS[id]
   return msg.send "Schedule #{id} not found" if !job
 
-  if config.deny_external_control is '1'
-    if job.user.room not in [msg.message.user.room, msg.message.user.reply_to]
-      return msg.send "Updating schedule for other room is not allowed"
+  if isRestrictedRoom(job.user.room, msg)
+    return msg.send "Updating schedule for the other room is restricted"
 
   job.message = message
   robot.brain.get(STORE_KEY)[id] = job.serialize()
@@ -148,9 +145,8 @@ cancelSchedule = (robot, msg, id) ->
   job = JOBS[id]
   return msg.send "#{id}: Schedule not found" if !job
 
-  if config.deny_external_control is '1'
-    if job.user.room not in [msg.message.user.room, msg.message.user.reply_to]
-      return msg.send "Canceling schedule for other room is not allowed"
+  if isRestrictedRoom(job.user.room, msg)
+    return msg.send "Canceling schedule for the other room is restricted"
 
   job.cancel()
   delete JOBS[id]
@@ -199,6 +195,16 @@ difference = (obj1 = {}, obj2 = {}) ->
 isCronPattern = (pattern) ->
   errors = cronParser.parseString(pattern).errors
   return !Object.keys(errors).length
+
+
+is_blank = (s) -> !s?.trim()
+
+
+isRestrictedRoom = (target_room, msg) ->
+  if config.deny_external_control is '1'
+    if target_room not in [msg.message.user.room, msg.message.user.reply_to]
+      return true
+  return false
 
 
 class Job
