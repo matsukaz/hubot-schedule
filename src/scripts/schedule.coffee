@@ -65,10 +65,25 @@ module.exports = (robot) ->
     else
       rooms = [target_room[1..]]
 
-    text = ''
+    # split jobs into date and cron pattern jobs
+    dateJobs = {}
+    cronJobs = {}
     for id, job of JOBS
       if show_all or job.user.room in rooms
-        text += "#{id}: [ #{job.pattern} ] \##{job.user.room} #{job.message} \n"
+        if job.pattern instanceof Date
+          dateJobs[id] = job
+        else
+          cronJobs[id] = job
+
+    # sort by date in ascending order
+    text = ''
+    for id in (Object.keys(dateJobs).sort (a, b) -> new Date(dateJobs[a].pattern) - new Date(dateJobs[b].pattern))
+      job = dateJobs[id]
+      text += "#{id}: [ #{formatDate(new Date(job.pattern))} ] \##{job.user.room} #{job.message} \n"
+
+    for id, job of cronJobs
+      text += "#{id}: [ #{job.pattern} ] \##{job.user.room} #{job.message} \n"
+
     if !!text.length
       text = text.replace(///#{org_text}///g, replaced_text) for org_text, replaced_text of config.list.replace_text
       msg.send text
@@ -200,11 +215,27 @@ isCronPattern = (pattern) ->
 is_blank = (s) -> !s?.trim()
 
 
+is_empty = (o) -> Object.keys(o).length == 0
+
+
 isRestrictedRoom = (target_room, msg) ->
   if config.deny_external_control is '1'
     if target_room not in [msg.message.user.room, msg.message.user.reply_to]
       return true
   return false
+
+
+toTwoDigits = (num) ->
+  ('0' + num).slice(-2)
+
+
+formatDate = (date) ->
+  offset = -date.getTimezoneOffset();
+  sign = ' GMT+'
+  if offset < 0
+    offset = -offset
+    sign = ' GMT-'
+  [date.getFullYear(), toTwoDigits(date.getMonth()+1), toTwoDigits(date.getDate())].join('-') + ' ' + date.toLocaleTimeString() + sign + toTwoDigits(offset / 60) + ':' + toTwoDigits(offset % 60);
 
 
 class Job
