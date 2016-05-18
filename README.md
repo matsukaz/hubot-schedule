@@ -26,7 +26,7 @@ Add `hubot-schedule` to your `package.json`.
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.4.1"
+  "hubot-schedule": "~0.5.0"
 }
 ```
 
@@ -99,7 +99,7 @@ Setting environment variable `HUBOT_SCHEDULE_DONT_RECEIVE=1` will disable hubot 
 
 ### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
 
-Setting environment variable `HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1` will disable to control schedule from other rooms.
+Setting environment variable `HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1` will deny schedule control from other rooms.
 
 ### HUBOT_SCHEDULE_DEBUG
 

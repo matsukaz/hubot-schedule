@@ -25,7 +25,7 @@ hubot-scheduleはスケジュール管理に`node-schedule`を利用していま
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.4.1"
+  "hubot-schedule": "~0.5.0"
 }
 ```
 
@@ -102,7 +102,7 @@ hubotにhubot-scheduleから送られたメッセージを処理させたくな�
 
 ### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
 
-他のroomからスケジュールを操作したくない場合には、環境変数に`HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1`を設定します。
+他のルームからスケジュールを操作されたくない場合は、環境変数に`HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1`を設定します。
 
 ### HUBOT_SCHEDULE_DEBUG
 
