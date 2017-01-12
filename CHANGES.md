@@ -1,3 +1,8 @@
+v0.5.1
+======
+
+* Fix serialization to strore room name correctly.
+
 v0.5.0
 ======
 
