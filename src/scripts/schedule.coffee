@@ -242,10 +242,8 @@ class Job
   constructor: (id, pattern, user, room, message, cb) ->
     @id = id
     @pattern = pattern
-    # cloning user because adapter may touch it later
-    @user = {}
-    @user[k] = v for k,v of user
-    @user.room = room || @user.room
+    @user = { room: (room || user.room) }
+    @user[k] = v for k,v of user when k in ['id','team_id','name'] # copy only needed properties
     @message = message
     @cb = cb
     @job
