@@ -245,7 +245,7 @@ getRoomName = (robot, user) ->
   try
     # Slack adapter needs to convert from room identifier
     # https://slackapi.github.io/hubot-slack/upgrading
-    return robot.adapter.client.rtm.dataStore.getChannelById(user.room).name
+    return robot.adapter.client.rtm.dataStore.getChannelGroupOrDMById(user.room).name
   catch e
     return user.room
 
