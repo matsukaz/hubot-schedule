@@ -50,16 +50,17 @@ module.exports = (robot) ->
   robot.respond /schedule (?:new|add)(?: #(.*))? "(.*?)" ((?:.|\s)*)$/i, (msg) ->
     target_room = msg.match[1]
 
-    if not is_blank(target_room) and isRestrictedRoom(target_room, msg)
+    if not is_blank(target_room) and isRestrictedRoom(target_room, robot, msg)
       return msg.send "Creating schedule for the other room is restricted"
     schedule robot, msg, target_room, msg.match[2], msg.match[3]
+
 
   robot.respond /schedule list(?: (all|#.*))?/i, (msg) ->
     target_room = msg.match[1]
     if is_blank(target_room) or config.deny_external_control is '1'
       # if target_room is undefined or blank, show schedule for current room
       # room is ignored when HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL is set to 1
-      rooms = [msg.message.user.room, msg.message.user.reply_to]
+      rooms = [getRoomName(robot, msg.message.user), msg.message.user.reply_to]
     else if target_room == "all"
       show_all = true
     else
@@ -138,6 +139,8 @@ createDatetimeSchedule = (robot, id, pattern, user, room, message) ->
 
 
 startSchedule = (robot, id, pattern, user, room, message, cb) ->
+  if !room
+    room = getRoomName(robot, user)
   job = new Job(id, pattern, user, room, message, cb)
   job.start(robot)
   JOBS[id] = job
@@ -148,7 +151,7 @@ updateSchedule = (robot, msg, id, message) ->
   job = JOBS[id]
   return msg.send "Schedule #{id} not found" if !job
 
-  if isRestrictedRoom(job.user.room, msg)
+  if isRestrictedRoom(job.user.room, robot, msg)
     return msg.send "Updating schedule for the other room is restricted"
 
   job.message = message
@@ -160,7 +163,7 @@ cancelSchedule = (robot, msg, id) ->
   job = JOBS[id]
   return msg.send "#{id}: Schedule not found" if !job
 
-  if isRestrictedRoom(job.user.room, msg)
+  if isRestrictedRoom(job.user.room, robot, msg)
     return msg.send "Canceling schedule for the other room is restricted"
 
   job.cancel()
@@ -218,9 +221,9 @@ is_blank = (s) -> !s?.trim()
 is_empty = (o) -> Object.keys(o).length == 0
 
 
-isRestrictedRoom = (target_room, msg) ->
+isRestrictedRoom = (target_room, robot, msg) ->
   if config.deny_external_control is '1'
-    if target_room not in [msg.message.user.room, msg.message.user.reply_to]
+    if target_room not in [getRoomName(robot, msg.message.user), msg.message.user.reply_to]
       return true
   return false
 
@@ -236,6 +239,15 @@ formatDate = (date) ->
     offset = -offset
     sign = ' GMT-'
   [date.getFullYear(), toTwoDigits(date.getMonth()+1), toTwoDigits(date.getDate())].join('-') + ' ' + date.toLocaleTimeString() + sign + toTwoDigits(offset / 60) + ':' + toTwoDigits(offset % 60);
+
+
+getRoomName = (robot, user) ->
+  try
+    # Slack adapter needs to convert from room identifier
+    # https://slackapi.github.io/hubot-slack/upgrading
+    return robot.adapter.client.rtm.dataStore.getChannelById(user.room).name
+  catch e
+    return user.room
 
 
 class Job
