@@ -1,7 +1,7 @@
 {
   "name": "hubot-schedule",
   "description": "Message scheduler for hubot",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "matsukaz <matsukaz@gmail.com> (http://matsukaz.hatenablog.com)",
   "homepage": "https://github.com/matsukaz/hubot-schedule",
   "main": "./src/index.coffee",
