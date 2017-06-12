@@ -1,3 +1,13 @@
+v0.6.1
+======
+
+* Fix channel name only resolved for public channel.
+
+v0.6.0
+======
+
+* Support hubot-slack v4.x.
+
 v0.5.1
 ======
 
