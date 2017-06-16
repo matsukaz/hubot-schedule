@@ -19,6 +19,13 @@ At first, I wanted a datetime-based scheduler.
 As I start developing this, I noticed that node-schedule also suppports cron-style scheduling, so I changed my mind to develop a scheduler that supports both cron-style and datetime-based format.
 
 
+## Note
+
+### for Slack users
+
+If you are using slack adapter such as `hubot-slack`, please use `v4.2.2` or later.
+`v4.2.1` sometimes fails to add new schedule.
+
 
 ## Installation
 
