@@ -57,10 +57,12 @@ module.exports = (robot) ->
 
   robot.respond /schedule list(?: (all|#.*))?/i, (msg) ->
     target_room = msg.match[1]
+    room_id = msg.message.user.room
+    room_name = getRoomName(robot, msg.message.user)
     if is_blank(target_room) or config.deny_external_control is '1'
       # if target_room is undefined or blank, show schedule for current room
       # room is ignored when HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL is set to 1
-      rooms = [getRoomName(robot, msg.message.user), msg.message.user.reply_to]
+      rooms = [room_name, msg.message.user.reply_to]
     else if target_room == "all"
       show_all = true
     else
@@ -70,6 +72,12 @@ module.exports = (robot) ->
     dateJobs = {}
     cronJobs = {}
     for id, job of JOBS
+
+      # backward compatibility
+      # hubot-schedule under v0.5.1 holds it's job by room_id instead of room_name
+      if job.user.room == room_id
+        job.user.room = room_name
+
       if show_all or job.user.room in rooms
         if job.pattern instanceof Date
           dateJobs[id] = job
