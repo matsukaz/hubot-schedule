@@ -1,3 +1,8 @@
+v0.6.2
+======
+
+* Fix schedule list not shown for the jobs created using v0.5.1 or below.
+
 v0.6.1
 ======
 

@@ -33,7 +33,7 @@ Add `hubot-schedule` to your `package.json`.
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.6.1"
+  "hubot-schedule": "~0.6.2"
 }
 ```
 
