@@ -1,3 +1,8 @@
+v0.7.0
+======
+
+* Add UTC Offset support for cron. As a result, hubot-schedule now depend on node-cron.
+
 v0.6.2
 ======
 

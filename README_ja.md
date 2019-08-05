@@ -31,7 +31,7 @@ Slackを利用されている場合、`hubot-slack` は `v4.2.2` 以上をご利
 
 ```
 "dependencies": {
-  "hubot-schedule": "~0.6.2"
+  "hubot-schedule": "~0.7.0"
 }
 ```
 
