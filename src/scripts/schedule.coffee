@@ -3,24 +3,27 @@
 #
 # Dependencies:
 #   "node-schedule" : "~1.0.0",
+#   "cron" : "~1.7.0",
 #   "cron-parser"   : "~1.0.1"
 #
 # Configuration:
 #   HUBOT_SCHEDULE_DEBUG - set "1" for debug
-#   HUBOT_SCHEDULE_DONT_RECEIVE - set "1" if you don't want hubot to be processed by scheduled message
 #   HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL - set "1" if you want to deny scheduling from other rooms
+#   HUBOT_SCHEDULE_DONT_RECEIVE - set "1" if you don't want hubot to be processed by scheduled message
 #   HUBOT_SCHEDULE_LIST_REPLACE_TEXT - set JSON object like '{"@":"[at]"}' to configure text replacement used when listing scheduled messages
+#   HUBOT_SCHEDULE_UTC_OFFSET_FOR_CRON - set default UTC offset for cron pattern in string format like "+09:00"
 #
 # Commands:
 #   hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
-#   hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
+#   hubot schedule [add|new] "<cron pattern>(,<utc offset>)" <message> - Schedule a message that runs recurrently.
 #   hubot schedule [add|new] #<room> "<datetime pattern>" <message> - Schedule a message to a specific room that runs on a specific date and time
-#   hubot schedule [add|new] #<room> "<cron pattern>" <message> - Schedule a message to a specific room that runs recurrently
+#   hubot schedule [add|new] #<room> "<cron pattern>(,<utc offset>)" <message> - Schedule a message to a specific room that runs recurrently
 #   hubot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 #   hubot schedule [upd|update] <id> <message> - Update scheduled message
 #   hubot schedule list - List all scheduled messages for current room
 #   hubot schedule list #<room> - List all scheduled messages for specified room
 #   hubot schedule list all - List all scheduled messages for any rooms
+#   hubot schedule env - Show hubot schedule environments
 #
 # Author:
 #   matsukaz <matsukaz@gmail.com>
@@ -32,8 +35,10 @@ config =
   deny_external_control: process.env.HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
   list:
     replace_text: JSON.parse(process.env.HUBOT_SCHEDULE_LIST_REPLACE_TEXT ? '{"@":"[@]"}')
+  utc_offset_for_cron: process.env.HUBOT_SCHEDULE_UTC_OFFSET_FOR_CRON
 
 scheduler = require('node-schedule')
+CronJob = require('cron').CronJob
 cronParser = require('cron-parser')
 {TextMessage} = require('hubot')
 JOBS = {}
@@ -79,10 +84,10 @@ module.exports = (robot) ->
         job.user.room = room_name
 
       if show_all or job.user.room in rooms
-        if job.pattern instanceof Date
-          dateJobs[id] = job
-        else
+        if isCronPattern(job.pattern)
           cronJobs[id] = job
+        else
+          dateJobs[id] = job
 
     # sort by date in ascending order
     text = ''
@@ -95,15 +100,22 @@ module.exports = (robot) ->
 
     if !!text.length
       text = text.replace(///#{org_text}///g, replaced_text) for org_text, replaced_text of config.list.replace_text
-      msg.send text
     else
-      msg.send 'No messages have been scheduled'
+      text = 'No messages have been scheduled'
+
+    msg.send text
+
 
   robot.respond /schedule (?:upd|update) (\d+) ((?:.|\s)*)/i, (msg) ->
     updateSchedule robot, msg, msg.match[1], msg.match[2]
 
+
   robot.respond /schedule (?:del|delete|remove|cancel) (\d+)/i, (msg) ->
     cancelSchedule robot, msg, msg.match[1]
+
+
+  robot.respond /schedule env/i, (msg) ->
+    showEnvironments robot, msg
 
 
 schedule = (robot, msg, room, pattern, message) ->
@@ -141,7 +153,7 @@ createCronSchedule = (robot, id, pattern, user, room, message) ->
 
 
 createDatetimeSchedule = (robot, id, pattern, user, room, message) ->
-  startSchedule robot, id, new Date(pattern), user, room, message, () ->
+  startSchedule robot, id, pattern, user, room, message, () ->
     delete JOBS[id]
     delete robot.brain.get(STORE_KEY)[id]
 
@@ -178,6 +190,20 @@ cancelSchedule = (robot, msg, id) ->
   delete JOBS[id]
   delete robot.brain.get(STORE_KEY)[id]
   msg.send "#{id}: Schedule canceled"
+
+
+showEnvironments = (robot, msg) ->
+  text = ''
+  text += "DEBUG = #{config.debug is '1'}\n"
+  text += "DONT_RECEIVE = #{config.dont_receive is '1'}\n"
+  text += "DENY_EXTERNAL_CONTROL = #{config.deny_external_control is '1'}\n"
+  text += "LIST_REPLACE_TEXT = #{JSON.stringify(config.list.replace_text)}\n"
+  if config.utc_offset_for_cron
+    text += "DEFAULT_UTC_OFFSET_FOR_CRON = \"#{config.utc_offset_for_cron}\"\n"
+  else
+    text += "DEFAULT_UTC_OFFSET_FOR_CRON = \"#{getUTCOffset(new Date())}\"\n"
+
+  msg.send text
 
 
 syncSchedules = (robot) ->
@@ -219,7 +245,7 @@ difference = (obj1 = {}, obj2 = {}) ->
 
 
 isCronPattern = (pattern) ->
-  errors = cronParser.parseString(pattern).errors
+  errors = cronParser.parseString(pattern.split(',')[0]).errors
   return !Object.keys(errors).length
 
 
@@ -241,12 +267,19 @@ toTwoDigits = (num) ->
 
 
 formatDate = (date) ->
-  offset = -date.getTimezoneOffset();
-  sign = ' GMT+'
+  day = [date.getFullYear(), toTwoDigits(date.getMonth()+1), toTwoDigits(date.getDate())].join('-')
+  time = [toTwoDigits(date.getHours()), toTwoDigits(date.getMinutes()), toTwoDigits(date.getSeconds())].join(':')
+  tz = getUTCOffset(date)
+  [day, time, tz].join(' ')
+
+
+getUTCOffset = (date) ->
+  offset = -date.getTimezoneOffset()
+  sign = '+'
   if offset < 0
     offset = -offset
-    sign = ' GMT-'
-  [date.getFullYear(), toTwoDigits(date.getMonth()+1), toTwoDigits(date.getDate())].join('-') + ' ' + date.toLocaleTimeString() + sign + toTwoDigits(offset / 60) + ':' + toTwoDigits(offset % 60);
+    sign = '-'
+  sign + toTwoDigits(offset / 60) + ':' + toTwoDigits(offset % 60)
 
 
 getRoomName = (robot, user) ->
@@ -261,7 +294,15 @@ getRoomName = (robot, user) ->
 class Job
   constructor: (id, pattern, user, room, message, cb) ->
     @id = id
-    @pattern = pattern
+    @pattern = pattern.trim()
+
+    # format cron pattern
+    if isCronPattern(@pattern)
+      datas = @pattern.split(',')
+      @pattern = datas[0].trim()
+      if datas[1] && datas[1].trim()
+        @pattern += ', ' + datas[1].trim()
+    
     @user = { room: (room || user.room) }
     @user[k] = v for k,v of user when k in ['id','team_id','name'] # copy only needed properties
     @message = message
@@ -269,12 +310,24 @@ class Job
     @job
 
   start: (robot) ->
-    @job = scheduler.scheduleJob(@pattern, =>
-      envelope = user: @user, room: @user.room
-      robot.send envelope, @message
-      robot.adapter.receive new TextMessage(@user, @message) unless config.dont_receive is '1'
-      @cb?()
-    )
+    if isCronPattern(@pattern)
+      datas = @pattern.split(',')
+      cronPattern = datas[0]
+      utcOffset = datas[1] ? config.utc_offset_for_cron ? getUTCOffset(new Date())
+      @job = new CronJob(cronPattern, =>
+        envelope = user: @user, room: @user.room
+        robot.send envelope, @message
+        robot.adapter.receive new TextMessage(@user, @message) unless config.dont_receive is '1'
+        @cb?()
+      , null, true, null, null, null, utcOffset
+      )
+    else 
+      @job = scheduler.scheduleJob(new Date(@pattern), =>
+        envelope = user: @user, room: @user.room
+        robot.send envelope, @message
+        robot.adapter.receive new TextMessage(@user, @message) unless config.dont_receive is '1'
+        @cb?()
+      )
 
   cancel: ->
     scheduler.cancelJob @job if @job

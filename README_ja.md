@@ -53,14 +53,15 @@ $ npm install
 
 ```
 Hubot> hubot help schedule
+Hubot schedule [add|new] "<cron pattern>(,<utc offset>)" <message> - Schedule a message that runs recurrently
 Hubot schedule [add|new] "<datetime pattern>" <message> - Schedule a message that runs on a specific date and time
-Hubot schedule [add|new] "<cron pattern>" <message> - Schedule a message that runs recurrently
+Hubot schedule [add|new] #<room> "<cron pattern>(,<utc offset>)" <message> - Schedule a message to a specific room that runs recurrently
 Hubot schedule [add|new] #<room> "<datetime pattern>" <message> - Schedule a message to a specific room that runs on a specific date and time
-Hubot schedule [add|new] #<room> "<cron pattern>" <message> - Schedule a message to a specific room that runs recurrently
 Hubot schedule [cancel|del|delete|remove] <id> - Cancel the schedule
 Hubot schedule [upd|update] <id> <message> - Update scheduled message
-Hubot schedule list - List all scheduled messages for current room
+Hubot schedule env - Show hubot schedule environments
 Hubot schedule list #<room> - List all scheduled messages for specified room
+Hubot schedule list - List all scheduled messages for current room
 Hubot schedule list all - List all scheduled messages for any rooms
 
 Hubot> hubot schedule add "2015-01-16 10:00" スクリプトをリリースするよ！
@@ -70,14 +71,14 @@ Hubot> hubot schedule add "0 10 * * 1-5" 朝のコーヒー淹れ忘れないで
 9735: Schedule created
 
 Hubot> hubot schedule list
-6738: [ Fri Jan 16 2015 10:00:00 GMT+0900 (JST) ] #Shell スクリプトをリリースするよ！
+6738: [ 2015-01-16 10:00:00 +09:00 ] #Shell スクリプトをリリースするよ！
 9735: [ 0 10 * * 1-5 ] #Shell 朝のコーヒー淹れ忘れないでね :)
 
 Hubot> hubot schedule update 6738 スクリプトをリリースしてみんなにシェアしよう！
 6738: Scheduled message updated
 
 Hubot> hubot schedule list
-6738: [ Fri Jan 16 2015 10:00:00 GMT+0900 (JST) ] #Shell スクリプトをリリースしてみんなにシェアしよう！
+6738: [ 2015-01-16 10:00:00 +09:00 ] #Shell スクリプトをリリースしてみんなにシェアしよう！
 9735: [ 0 10 * * 1-5 ] #Shell 朝のコーヒー淹れ忘れないでね :)
 
 スクリプトをリリースしてみんなにシェアしよう！
@@ -92,7 +93,6 @@ Hubot> hubot schedule del 6738
 Hubot> hubot schedule list
 Message is not scheduled
 
-
 Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
 9735: Schedule created
 (hubotはhubot-scheduleによるメッセージを処理できるため、指定時間になったらコーヒー画像を表示する、といった利用が可能です。)
@@ -100,24 +100,51 @@ Hubot> hubot schedule add "0 10 * * 1-5" hubot image me コーヒー
 
 スケジュール登録したメッセージを永続化したい場合は、[hubot-redis-brain](https://github.com/hubot-scripts/hubot-redis-brain)のようなhubot-brainの永続化モジュールを利用してください。
 
+### UTC Offsetの利用方法
+
+OSのタイムゾーンがAsia/Tokyoの場合（UTC Offsetが"+09:00"）
+
+```
+Hubot> hubot schedule env
+DEBUG = false
+DONT_RECEIVE = false
+DENY_EXTERNAL_CONTROL = false
+LIST_REPLACE_TEXT = {"@":"[@]"}
+DEFAULT_UTC_OFFSET_FOR_CRON = "+09:00"
+
+Hubot> hubot schedule add "2019-08-05 10:00 +02:00" 日付形式のスケジュール登録時にUTC Offsetを指定
+2914: Schedule created
+
+Hubot> hubot schedule add "0 10 * * 1-5, +02:00" cron形式のスケジュール登録時にUTC Offsetを指定
+4291: Schedule created
+
+Hubot> hubot schedule list
+2914: [ 2019-08-05 17:00:00 +09:00 ] #Shell 日付形式のスケジュール登録時にUTC Offsetを指定 (list表示時はOSのタイムゾーンで表示)
+4291: [ 0 10 * * 1-5, +02:00 ] #Shell cron形式のスケジュール登録時にUTC Offsetを指定
+```
+
+
 ## 設定
-
-### HUBOT_SCHEDULE_DONT_RECEIVE
-
-hubotにhubot-scheduleから送られたメッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。
-
-### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
-
-他のルームからスケジュールを操作されたくない場合は、環境変数に`HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1`を設定します。
 
 ### HUBOT_SCHEDULE_DEBUG
 
 環境変数に`HUBOT_SCHEDULE_DEBUG=1`を設定することで、デバッグメッセージなどを表示することができます。
 
+### HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL
+
+他のルームからスケジュールを操作されたくない場合は、環境変数に`HUBOT_SCHEDULE_DENY_EXTERNAL_CONTROL=1`を設定します。
+
+### HUBOT_SCHEDULE_DONT_RECEIVE
+
+hubotにhubot-scheduleから送られたメッセージを処理させたくない場合には、環境変数に`HUBOT_SCHEDULE_DONT_RECEIVE=1`を設定します。
+
 ### HUBOT_SCHEDULE_LIST_REPLACE_TEXT
 
 環境変数に`HUBOT_SCHEDULE_LIST_REPLACE_TEXT='<文字列化したJSON>'`を設定することで、スケジュールをリスト表示する際に文字を置換することができます。デフォルトの設定は`'{"@":"[@]"}'`です。
 
+### HUBOT_SCHEDULE_UTC_OFFSET_FOR_CRON
+
+環境変数に`HUBOT_SCHEDULE_UTC_OFFSET_FOR_CRON='<文字列形式のUTCオフセット(e.g. "+09:00")>'` を設定することで、cron形式のスケジュールのデフォルトのUTCオフセットを設定します。設定しなかった場合は、OSのタイムゾーンなどが利用されます。
 
 
 ## Copyright and license
