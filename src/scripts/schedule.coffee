@@ -23,6 +23,7 @@
 #   hubot schedule list - List all scheduled messages for current room
 #   hubot schedule list #<room> - List all scheduled messages for specified room
 #   hubot schedule list all - List all scheduled messages for any rooms
+#   hubot schedule env - Show hubot schedule environments
 #
 # Author:
 #   matsukaz <matsukaz@gmail.com>
@@ -113,6 +114,10 @@ module.exports = (robot) ->
     cancelSchedule robot, msg, msg.match[1]
 
 
+  robot.respond /schedule env/i, (msg) ->
+    showEnvironments robot, msg
+
+
 schedule = (robot, msg, room, pattern, message) ->
   if JOB_MAX_COUNT <= Object.keys(JOBS).length
     return msg.send "Too many scheduled messages"
@@ -185,6 +190,20 @@ cancelSchedule = (robot, msg, id) ->
   delete JOBS[id]
   delete robot.brain.get(STORE_KEY)[id]
   msg.send "#{id}: Schedule canceled"
+
+
+showEnvironments = (robot, msg) ->
+  text = ''
+  text += "DEBUG = #{config.debug is '1'}\n"
+  text += "DONT_RECEIVE = #{config.dont_receive is '1'}\n"
+  text += "DENY_EXTERNAL_CONTROL = #{config.deny_external_control is '1'}\n"
+  text += "LIST_REPLACE_TEXT = #{JSON.stringify(config.list.replace_text)}\n"
+  if config.utc_offset_for_cron
+    text += "DEFAULT_UTC_OFFSET_FOR_CRON = \"#{config.utc_offset_for_cron}\"\n"
+  else
+    text += "DEFAULT_UTC_OFFSET_FOR_CRON = \"#{getUTCOffset(new Date())}\"\n"
+
+  msg.send text
 
 
 syncSchedules = (robot) ->
